@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Формы для ввода координат и массы</title>
+    <style>
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<form id="mainForm">
+    <label for="num">Введите количество тел:</label>
+    <input type="number" id="num" name="int" value="0">
+    <button type="button" onclick="createForms()">Создать формы</button>
+</form>
+
+<div id="formsContainer"></div>
+
+<script>
+    function createForms() {
+        const numInput = document.getElementById('num');
+        const numValue = parseInt(numInput.value);
+
+        if (!isNaN(numValue) && numValue >= 0) {
+            const formsContainer = document.getElementById('formsContainer');
+            formsContainer.innerHTML = '';
+
+            for (let i = 0; i < numValue; i++) {
+                const form = document.createElement('form');
+                form.className = 'body-form';
+                const xLabel = document.createElement('label');
+                xLabel.textContent = `Координата x (тело ${i + 1}):`;
+                const xInput = document.createElement('input');
+                xInput.type = 'number';
+                xInput.step = 'any';
+                xInput.name = `x${i}`;
+                xInput.required = true;
+
+                const yLabel = document.createElement('label');
+                yLabel.textContent = `Координата y (тело ${i + 1}):`;
+                const yInput = document.createElement('input');
+                yInput.type = 'number';
+                yInput.step = 'any';
+                yInput.name = `y${i}`;
+                yInput.required = true;
+
+                const massLabel = document.createElement('label');
+                massLabel.textContent = `Масса (тело ${i + 1}):`;
+                const massInput = document.createElement('input');
+                massInput.type = 'number';
+                massInput.step = 'any';
+                massInput.name = `mass${i}`;
+                massInput.required = true;
+
+                form.appendChild(xLabel);
+                form.appendChild(xInput);
+                form.appendChild(document.createElement('br'));
+                form.appendChild(yLabel);
+                form.appendChild(yInput);
+                form.appendChild(document.createElement('br'));
+                form.appendChild(massLabel);
+                form.appendChild(massInput);
+
+                formsContainer.appendChild(form);
+            }
+
+            const submitButton = document.createElement('button');
+            submitButton.type = 'button';
+            submitButton.textContent = 'Отправить данные';
+            submitButton.onclick = sendData;
+            formsContainer.appendChild(submitButton);
+        } else {
+            alert('Пожалуйста, введите положительное число.');
+        }
+    }
+
+    function sendData() {
+        const forms = document.querySelectorAll('.body-form');
+        let isValid = true;
+
+        forms.forEach((form, index) => {
+            const xInput = form.querySelector(`[name="x${index}"]`);
+            const yInput = form.querySelector(`[name="y${index}"]`);
+            const massInput = form.querySelector(`[name="mass${index}"]`);
+
+            if (!xInput.value || !yInput.value || !massInput.value) {
+                isValid = false;
+                alert(`Пожалуйста, заполните все поля для тела ${index + 1}.`);
+            }
+        });
+
+        if (isValid) {
+            // Отправка данных на сервер (здесь можно добавить логику)
+            alert('Данные успешно отправлены!');
+        }
+    }
+</script>
+</body>
+</html>
