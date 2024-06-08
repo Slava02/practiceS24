@@ -1,0 +1,17 @@
+{{template "base" .}}
+
+{{define "title"}}Заметка #{{.Object.ID}}{{end}}
+
+{{define "main"}}
+<div class='snippet'>
+    <div class='metadata'>
+        <strong>{{.Object.Title}}</strong>
+        <span>#{{.Object.ID}}</span>
+    </div>
+    <pre><code>X:{{.Object.X}} Y:{{.Object.Y}} Z:{{.Object.Z}} Mass:{{.Object.Mass}}</code></pre>
+    <div class='metadata'>
+        <time>Создан: {{.Object.Created}}</time>
+        <time>Срок: {{.Object.Expires}}</time>
+    </div>
+</div>
+{{end}}

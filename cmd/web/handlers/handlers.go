@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
-	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -17,7 +17,7 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 			app.NotFound(w)
 			return
 		}
-		s, err := app.Objects.Get(id)
+		o, err := app.Objects.Get(id)
 		if err != nil {
 			if errors.Is(err, models.ErrNoRecord) {
 				app.NotFound(w)
@@ -27,7 +27,27 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		fmt.Fprintf(w, "%+v", s)
+		log.Printf("Got Objects: %+v", o)
+		fmt.Fprintf(w, "%+v", o)
+
+		//data := config.TemplateData{Object: o}
+		//
+		//files := []string{
+		//	"./ui/html/show.page.tmpl",
+		//	"./ui/html/base.layout.tmpl",
+		//	"./ui/html/footer.partial.tmpl",
+		//}
+		//
+		//ts, err := template.ParseFiles(files...)
+		//if err != nil {
+		//	app.ServerError(w, err)
+		//	return
+		//}
+		//
+		//err = ts.Execute(w, data)
+		//if err != nil {
+		//	app.ServerError(w, err)
+		//}
 	}
 }
 
@@ -45,7 +65,9 @@ func CreateUniverse(app *config.Application) http.HandlerFunc {
 		Mass := 4.
 		expires := `7`
 
-		id, err := app.Objects.Insert(title, X, Y, Z, Mass, expires)
+		obj := &models.Object{}
+
+		id, err := app.Objects.Insert(obj)
 		if err != nil {
 			app.ServerError(w, err)
 			return
@@ -62,23 +84,33 @@ func Home(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		files := []string{
-			"./ui/html/Home.page.tmpl",
-			"./ui/html/base.layout.tmpl",
-			"./ui/html/footer.partial.tmpl",
-		}
+		o, err := app.Objects.Latest()
 
-		ts, err := template.ParseFiles(files...)
 		if err != nil {
-			app.ErrorLog.Println(err.Error())
 			app.ServerError(w, err)
 			return
 		}
 
-		err = ts.Execute(w, nil)
-		if err != nil {
-			app.ErrorLog.Println(err.Error())
-			app.ServerError(w, err)
+		for _, obj := range o {
+			fmt.Fprintf(w, "%v\n", *obj)
 		}
+		//files := []string{
+		//	"./ui/html/Home.page.tmpl",
+		//	"./ui/html/base.layout.tmpl",
+		//	"./ui/html/footer.partial.tmpl",
+		//}
+		//
+		//ts, err := template.ParseFiles(files...)
+		//if err != nil {
+		//	app.ErrorLog.Println(err.Error())
+		//	app.ServerError(w, err)
+		//	return
+		//}
+		//
+		//err = ts.Execute(w, nil)
+		//if err != nil {
+		//	app.ErrorLog.Println(err.Error())
+		//	app.ServerError(w, err)
+		//}
 	}
 }

@@ -8,16 +8,24 @@ import (
 var ErrNoRecord = errors.New("models: подходящей записи не найдено")
 
 type Storage interface {
-	Insert(title string, x, y, z float64, mass float64, expires string) (int, error)
+	Insert(obj *Object) (int, error)
 	Get(id int) (*Object, error)
-	Latest() ([]*Object, error)
+	Latest(num int) ([]*Object, error)
 }
 
 type Object struct {
 	ID      int
 	Title   string
-	X, Y, Z float64
-	Mass    float64
+	Params  []*Params
 	Created time.Time
 	Expires time.Time
+}
+
+type Params struct {
+	Coord *Coord
+	Mass  float64
+}
+
+type Coord struct {
+	X, Y, Z float64
 }

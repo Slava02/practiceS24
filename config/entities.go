@@ -28,3 +28,7 @@ func (app *Application) ClientError(w http.ResponseWriter, status int) {
 func (app *Application) NotFound(w http.ResponseWriter) {
 	app.ClientError(w, http.StatusNotFound)
 }
+
+type TemplateData struct {
+	Object *models.Object
+}
