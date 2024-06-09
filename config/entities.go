@@ -8,6 +8,11 @@ import (
 	"runtime/debug"
 )
 
+const (
+	ShowOnMain = 10
+	ExpiesIn   = 7
+)
+
 type Application struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
