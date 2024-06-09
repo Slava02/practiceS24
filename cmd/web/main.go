@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -25,10 +26,16 @@ func main() {
 	}
 	defer db.Close()
 
+	templateCache, err := templates.NewTemplateCache("./ui/html/")
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	app := &config.Application{
-		ErrorLog: errorLog,
-		InfoLog:  infoLog,
-		Universe: &mysql.UniverseModel{DB: db},
+		ErrorLog:      errorLog,
+		InfoLog:       infoLog,
+		Universe:      &mysql.UniverseModel{DB: db},
+		TemplateCache: templateCache,
 	}
 
 	srv := &http.Server{

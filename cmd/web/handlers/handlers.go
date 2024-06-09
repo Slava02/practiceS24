@@ -6,7 +6,6 @@ import (
 	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -33,24 +32,9 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 		}
 
 		//fmt.Fprintf(w, "%+v", universe)
-		data := templates.TemplateData{Universe: universe}
-
-		files := []string{
-			"./ui/html/show.page.tmpl",
-			"./ui/html/base.layout.tmpl",
-			"./ui/html/footer.partial.tmpl",
-		}
-
-		ts, err := template.ParseFiles(files...)
-		if err != nil {
-			app.ServerError(w, err)
-			return
-		}
-
-		err = ts.Execute(w, data)
-		if err != nil {
-			app.ServerError(w, err)
-		}
+		app.Render(w, r, "show.page.tmpl", &templates.TemplateData{
+			Universe: universe,
+		})
 	}
 }
 
@@ -113,25 +97,9 @@ func Home(app *config.Application) http.HandlerFunc {
 		//for _, obj := range universe {
 		//	fmt.Fprintf(w, "%v\n", *obj)
 		//}
-		data := templates.TemplateData{Universes: universes}
 
-		files := []string{
-			"./ui/html/Home.page.tmpl",
-			"./ui/html/base.layout.tmpl",
-			"./ui/html/footer.partial.tmpl",
-		}
-
-		ts, err := template.ParseFiles(files...)
-		if err != nil {
-			app.ErrorLog.Println(err.Error())
-			app.ServerError(w, err)
-			return
-		}
-
-		err = ts.Execute(w, data)
-		if err != nil {
-			app.ErrorLog.Println(err.Error())
-			app.ServerError(w, err)
-		}
+		app.Render(w, r, "home.page.tmpl", &templates.TemplateData{
+			Universes: universes,
+		})
 	}
 }
