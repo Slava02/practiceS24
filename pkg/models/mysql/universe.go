@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
-	"log"
 )
 
 type UniverseModel struct {
@@ -60,7 +59,7 @@ func (m *UniverseModel) Get(id int) (*models.Universe, error) {
 			 WHERE expires > NOW() AND id = ?`
 
 	err := m.DB.QueryRow(stmt, id).Scan(&o.ID, &o.Title, &o.Created, &o.Expires)
-	log.Printf("INFO: Got object fields: %+v", o)
+	// log.Printf("INFO: Got object fields: %+v", o)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -81,7 +80,7 @@ func (m *UniverseModel) Get(id int) (*models.Universe, error) {
 			Coord: &models.Coord{},
 		}
 		err = rows.Scan(&p.Coord.X, &p.Coord.X, &p.Coord.X, &p.Mass)
-		log.Printf("INFO: Got params: %+v\n", p)
+		// log.Printf("INFO: Got params: %+v\n", p)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, models.ErrNoRecord
@@ -96,7 +95,7 @@ func (m *UniverseModel) Get(id int) (*models.Universe, error) {
 	}
 
 	//err = tx.Commit()
-	log.Printf("INFO: Send object: %+v\n", o)
+	// log.Printf("INFO: Send object: %+v\n", o)
 	return o, nil
 }
 
@@ -120,7 +119,7 @@ func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 	for rows_o.Next() {
 		o := &models.Universe{}
 		err = rows_o.Scan(&o.ID, &o.Title, &o.Created, &o.Expires)
-		log.Printf("INFO: Got object values: %+v\n", o)
+		// log.Printf("INFO: Got object values: %+v\n", o)
 		if err != nil {
 			return nil, fmt.Errorf("CAN'T GET LATEST (2): %w", err)
 		}
@@ -136,7 +135,7 @@ func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 			}
 
 			err = rows_p.Scan(&p.Coord.X, &p.Coord.Y, &p.Coord.Z, &p.Mass)
-			log.Printf("INFO: Got params: %+v\n", p)
+			// log.Printf("INFO: Got params: %+v\n", p)
 			if err != nil {
 				return nil, fmt.Errorf("CAN'T GET LATEST (4): %w", err)
 			}

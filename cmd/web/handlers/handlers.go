@@ -6,26 +6,27 @@ import (
 	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
-	"log"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
 )
 
 func ShowUniverse(app *config.Application) http.HandlerFunc {
-	log.Printf("\nShowUniverse API call\n")
+	// log.Printf("\nShowUniverse API call\n")
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		id, err := strconv.Atoi(chi.URLParamFromCtx(r.Context(), "id"))
 		if err != nil || id < 1 {
 			app.NotFound(w)
 			return
 		}
+
 		universe, err := app.Universe.Get(id)
-		log.Printf("INFO: Got Universe: %+v\n", universe)
+		// log.Printf("INFO: Got Universe: %+v\n", universe)
 		if err != nil {
 			if errors.Is(err, models.ErrNoRecord) {
 				app.NotFound(w)
 			} else {
-				log.Printf("ShowUniverse Server Error:\n")
+				// log.Printf("ShowUniverse Server Error:\n")
 				app.ServerError(w, err)
 			}
 			return
@@ -39,12 +40,18 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 }
 
 func CreateUniverse(app *config.Application) http.HandlerFunc {
-	log.Printf("INFO: CreateUniverse API call\n")
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			w.Header().Set("Allow", http.MethodPost)
-			app.ClientError(w, http.StatusMethodNotAllowed)
-		}
+		w.Write([]byte("Display the form for creating a new snippet..."))
+	}
+}
+
+func CreateUniversePost(app *config.Application) http.HandlerFunc {
+	// log.Printf("INFO: CreateUniversePost API call\n")
+	return func(w http.ResponseWriter, r *http.Request) {
+		//if r.Method != http.MethodPost {
+		//	w.Header().Set("Allow", http.MethodPost)
+		//	app.ClientError(w, http.StatusMethodNotAllowed)
+		//}
 
 		obj := &models.Universe{
 			Title: `Вселенная теста`,
@@ -70,22 +77,22 @@ func CreateUniverse(app *config.Application) http.HandlerFunc {
 
 		id, err := app.Universe.Insert(obj)
 		if err != nil {
-			log.Printf("ERROR: CreateUniverse ServerError:\n")
+			// log.Printf("ERROR: CreateUniversePost ServerError:\n")
 			app.ServerError(w, err)
 			return
 		}
 
-		log.Printf("INFO: Redirect to /universe?id=%d\n", id)
-		http.Redirect(w, r, fmt.Sprintf("/universe?id=%d", id), http.StatusSeeOther)
+		// log.Printf("INFO: Redirect to /universe?id=%d\n", id)
+		http.Redirect(w, r, fmt.Sprintf("/universe/view/%d", id), http.StatusSeeOther)
 	}
 }
 
 func Home(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			app.NotFound(w)
-			return
-		}
+		//if r.URL.Path != "/" {
+		//	app.NotFound(w)
+		//	return
+		//}
 
 		universes, err := app.Universe.Latest(config.ShowOnMain)
 

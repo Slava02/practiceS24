@@ -7,3 +7,7 @@ POST http://127.0.0.1:4000/universe/create
 ###
 # @name showsnippet
 GET http://127.0.0.1:4000/universe?id=1
+
+###
+# @name showmain
+GET http://127.0.0.1:4000/
