@@ -8,12 +8,12 @@ import (
 var ErrNoRecord = errors.New("models: подходящей записи не найдено")
 
 type Storage interface {
-	Insert(obj *Object) (int, error)
-	Get(id int) (*Object, error)
-	Latest(num int) ([]*Object, error)
+	Insert(obj *Universe) (int, error)
+	Get(id int) (*Universe, error)
+	Latest(num int) ([]*Universe, error)
 }
 
-type Object struct {
+type Universe struct {
 	ID      int
 	Title   string
 	Params  []*Params

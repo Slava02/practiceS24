@@ -28,7 +28,7 @@ func main() {
 	app := &config.Application{
 		ErrorLog: errorLog,
 		InfoLog:  infoLog,
-		Objects:  &mysql.ObjectModel{DB: db},
+		Universe: &mysql.UniverseModel{DB: db},
 	}
 
 	srv := &http.Server{

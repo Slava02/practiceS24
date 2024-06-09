@@ -9,11 +9,11 @@ import (
 	"log"
 )
 
-type ObjectModel struct {
+type UniverseModel struct {
 	DB *sql.DB
 }
 
-func (m *ObjectModel) Insert(obj *models.Object) (int, error) {
+func (m *UniverseModel) Insert(obj *models.Universe) (int, error) {
 	//tx, err := m.DB.Begin()
 	//if err != nil {
 	//	return 0, fmt.Errorf("CAN'T PROCEED INSERT: %w", err)
@@ -50,8 +50,8 @@ func (m *ObjectModel) Insert(obj *models.Object) (int, error) {
 	return int(id), nil
 }
 
-func (m *ObjectModel) Get(id int) (*models.Object, error) {
-	o := &models.Object{}
+func (m *UniverseModel) Get(id int) (*models.Universe, error) {
+	o := &models.Universe{}
 
 	//tx, err := m.DB.Begin()
 
@@ -100,7 +100,7 @@ func (m *ObjectModel) Get(id int) (*models.Object, error) {
 	return o, nil
 }
 
-func (m *ObjectModel) Latest(num int) ([]*models.Object, error) {
+func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 	stmt1 := `SELECT id, title, created, expires 
 			 FROM objects 
 			 WHERE expires > NOW() ORDER BY created DESC LIMIT ?`
@@ -115,10 +115,10 @@ func (m *ObjectModel) Latest(num int) ([]*models.Object, error) {
 	}
 	defer rows_o.Close()
 
-	var objects []*models.Object
+	var objects []*models.Universe
 
 	for rows_o.Next() {
-		o := &models.Object{}
+		o := &models.Universe{}
 		err = rows_o.Scan(&o.ID, &o.Title, &o.Created, &o.Expires)
 		log.Printf("INFO: Got object values: %+v\n", o)
 		if err != nil {

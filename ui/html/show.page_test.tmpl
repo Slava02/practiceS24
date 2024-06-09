@@ -1,0 +1,13 @@
+{{template "base" .}}
+
+{{define "title"}}Заметка #{{.Universe.ID}}{{end}}
+
+{{define "main"}}
+    {{range .Universes}}
+        <div class='snippet'>
+            <div class='metadata'>
+                <strong>{{.ID}}</strong>
+            </div>
+        </div>
+    {{end}}
+{{end}}

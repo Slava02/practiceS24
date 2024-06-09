@@ -3,6 +3,23 @@
 {{define "title"}}Домашняя страница{{end}}
 
 {{define "main"}}
-<h2>Список вселенных</h2>
-<p>Пока здесь ничего нет!</p>
+    <h2>Последние вселенные</h2>
+    {{if .Universes}}
+        <table>
+            <tr>
+                <th>Заголовок</th>
+                <th>Создан</th>
+                <th>ID</th>
+            </tr>
+            {{range .Universes}}
+                <tr>
+                    <td><a href='/universe?id={{.ID}}'>{{.Title}}</a></td>
+                    <td>{{.Created}}</td>
+                    <td>#{{.ID}}</td>
+                </tr>
+            {{end}}
+        </table>
+    {{else}}
+        <p>Здесь ничего нет... пока что!</p>
+    {{end}}
 {{end}}

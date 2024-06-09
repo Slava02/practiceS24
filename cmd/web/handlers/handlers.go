@@ -3,8 +3,10 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,8 +20,8 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 			app.NotFound(w)
 			return
 		}
-		o, err := app.Objects.Get(id)
-		log.Printf("INFO: Got Objects: %+v\n", o)
+		universe, err := app.Universe.Get(id)
+		log.Printf("INFO: Got Universe: %+v\n", universe)
 		if err != nil {
 			if errors.Is(err, models.ErrNoRecord) {
 				app.NotFound(w)
@@ -30,26 +32,25 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		fmt.Fprintf(w, "%+v", o)
+		//fmt.Fprintf(w, "%+v", universe)
+		data := templates.TemplateData{Universe: universe}
 
-		//data := config.TemplateData{Object: o}
-		//
-		//files := []string{
-		//	"./ui/html/show.page.tmpl",
-		//	"./ui/html/base.layout.tmpl",
-		//	"./ui/html/footer.partial.tmpl",
-		//}
-		//
-		//ts, err := template.ParseFiles(files...)
-		//if err != nil {
-		//	app.ServerError(w, err)
-		//	return
-		//}
-		//
-		//err = ts.Execute(w, data)
-		//if err != nil {
-		//	app.ServerError(w, err)
-		//}
+		files := []string{
+			"./ui/html/show.page.tmpl",
+			"./ui/html/base.layout.tmpl",
+			"./ui/html/footer.partial.tmpl",
+		}
+
+		ts, err := template.ParseFiles(files...)
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+
+		err = ts.Execute(w, data)
+		if err != nil {
+			app.ServerError(w, err)
+		}
 	}
 }
 
@@ -61,7 +62,7 @@ func CreateUniverse(app *config.Application) http.HandlerFunc {
 			app.ClientError(w, http.StatusMethodNotAllowed)
 		}
 
-		obj := &models.Object{
+		obj := &models.Universe{
 			Title: `Вселенная теста`,
 			Params: []*models.Params{
 				{
@@ -72,10 +73,18 @@ func CreateUniverse(app *config.Application) http.HandlerFunc {
 					},
 					Mass: 4.,
 				},
+				{
+					Coord: &models.Coord{
+						X: 10.,
+						Y: 20.,
+						Z: 30.,
+					},
+					Mass: 40.,
+				},
 			},
 		}
 
-		id, err := app.Objects.Insert(obj)
+		id, err := app.Universe.Insert(obj)
 		if err != nil {
 			log.Printf("ERROR: CreateUniverse ServerError:\n")
 			app.ServerError(w, err)
@@ -94,33 +103,35 @@ func Home(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		o, err := app.Objects.Latest(config.ShowOnMain)
+		universes, err := app.Universe.Latest(config.ShowOnMain)
 
 		if err != nil {
 			app.ServerError(w, err)
 			return
 		}
 
-		for _, obj := range o {
-			fmt.Fprintf(w, "%v\n", *obj)
+		//for _, obj := range universe {
+		//	fmt.Fprintf(w, "%v\n", *obj)
+		//}
+		data := templates.TemplateData{Universes: universes}
+
+		files := []string{
+			"./ui/html/Home.page.tmpl",
+			"./ui/html/base.layout.tmpl",
+			"./ui/html/footer.partial.tmpl",
 		}
-		//files := []string{
-		//	"./ui/html/Home.page.tmpl",
-		//	"./ui/html/base.layout.tmpl",
-		//	"./ui/html/footer.partial.tmpl",
-		//}
-		//
-		//ts, err := template.ParseFiles(files...)
-		//if err != nil {
-		//	app.ErrorLog.Println(err.Error())
-		//	app.ServerError(w, err)
-		//	return
-		//}
-		//
-		//err = ts.Execute(w, nil)
-		//if err != nil {
-		//	app.ErrorLog.Println(err.Error())
-		//	app.ServerError(w, err)
-		//}
+
+		ts, err := template.ParseFiles(files...)
+		if err != nil {
+			app.ErrorLog.Println(err.Error())
+			app.ServerError(w, err)
+			return
+		}
+
+		err = ts.Execute(w, data)
+		if err != nil {
+			app.ErrorLog.Println(err.Error())
+			app.ServerError(w, err)
+		}
 	}
 }

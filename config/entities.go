@@ -16,7 +16,7 @@ const (
 type Application struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
-	Objects  models.Storage
+	Universe models.Storage
 }
 
 func (app *Application) ServerError(w http.ResponseWriter, err error) {
@@ -32,8 +32,4 @@ func (app *Application) ClientError(w http.ResponseWriter, status int) {
 
 func (app *Application) NotFound(w http.ResponseWriter) {
 	app.ClientError(w, http.StatusNotFound)
-}
-
-type TemplateData struct {
-	Object *models.Object
 }
