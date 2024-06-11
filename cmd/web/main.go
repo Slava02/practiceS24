@@ -14,7 +14,7 @@ import (
 
 func main() {
 	addr := flag.String("addr", ":4000", "Сетевой адрес HTTP")
-	dsn := flag.String("dsn", "web:ZXASQW!@zxasqw12@/multiuniverse?parseTime=true", "Название MySQL источника данных")
+	dsn := flag.String("dsn", "root:ZXASQW!@zxasqw12@/multiuniverse?parseTime=true", "Название MySQL источника данных")
 	flag.Parse()
 
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)

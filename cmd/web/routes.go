@@ -5,7 +5,6 @@ import (
 	"github.com/Slava02/practiceS24/config"
 	"github.com/go-chi/chi/v5"
 	"net/http"
-	"strings"
 )
 
 func Routes(app *config.Application) http.Handler {
@@ -22,26 +21,11 @@ func Routes(app *config.Application) http.Handler {
 		app.NotFound(w)
 	})
 
-	FileServer(r, "/files", http.Dir("./ui/static/"))
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+
+	//  TODO figure out how to manage routes in file server if we have several routes for it
+	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+	r.Handle("/universe/static/*", http.StripPrefix("/universe/static/", fileServer))
 
 	return r
-}
-
-func FileServer(r chi.Router, path string, root http.FileSystem) {
-	if strings.ContainsAny(path, "{}*") {
-		panic("FileServer does not permit any URL parameters.")
-	}
-
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
-		path += "/"
-	}
-	path += "*"
-
-	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
-		rctx := chi.RouteContext(r.Context())
-		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/universe/static/*")
-		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
-		fs.ServeHTTP(w, r)
-	})
 }
