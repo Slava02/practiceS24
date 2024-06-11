@@ -14,11 +14,12 @@ type Storage interface {
 }
 
 type Universe struct {
-	ID      int
-	Title   string
-	Params  []*Params
-	Created time.Time
-	Expires time.Time
+	ID        int       `json:"id,omitempty"`
+	Title     string    `json:"title"`
+	Params    []*Params `json:"params"`
+	Created   time.Time `json:"created,omitempty"`
+	ExpiresIn int       `json:"expiresIn"`
+	Expires   time.Time `json:"expires,omitempty"`
 }
 
 func NewUniverse(title string, params []*Params, expires int) *Universe {
@@ -30,12 +31,14 @@ func NewUniverse(title string, params []*Params, expires int) *Universe {
 }
 
 type Params struct {
-	Coord *Coord
-	Mass  float64
+	Coord *Coord  `json:"coord"`
+	Mass  float64 `json:"mass"`
 }
 
 type Coord struct {
-	X, Y, Z float64
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
 }
 
 func NewParams(x, y, z, mass float64) *Params {

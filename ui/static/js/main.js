@@ -38,6 +38,9 @@ function createForms() {
 						<label for="y${i}">Координата y (float):</label>
 						<input type="number" step="any" id="y${i}" name="y${i}" required>
 						<br>
+						<label for="z${i}">Координата z (float):</label>
+						<input type="number" step="any" id="z${i}" name="z${i}" required>
+						<br>
 						<label for="mass${i}">Масса (float):</label>
 						<input type="number" step="any" id="mass${i}" name="mass${i}" required>
 						<br><br>
@@ -63,11 +66,15 @@ function createForms() {
 
 $(document).on('click', '.submitBtn', function(){
 	const formData = [];
+	const params = [];
+
 	const title = $('#title').val();
 	formData.push(title);
+
 	$('.myForm').each(function(index, form) {
 		const x = parseFloat($(form).find('input[name^="x"]').val());
 		const y = parseFloat($(form).find('input[name^="y"]').val());
+		const z = parseFloat($(form).find('input[name^="z"]').val());
 		const mass = parseFloat($(form).find('input[name^="mass"]').val());
 
 		if (isNaN(x) || isNaN(y) || isNaN(mass)) {
@@ -75,15 +82,18 @@ $(document).on('click', '.submitBtn', function(){
 			return;
 		}
 
-		formData.push({x, y, mass});
+		params.push({coord: {x: x, y: y, z: z}, mass: mass});
 	});
-	const expires = $('input[name="expires"]:checked').val();
+
+	formData.push(params);
+
+	const expires = parseInt($('input[name="expires"]:checked').val());
 	formData.push(expires);
 
 	jQuery.ajax({
 		url: '/universe/create',
 		method: 'POST',
-		data: JSON.stringify(formData),
+		data: JSON.stringify({title: formData[0], params: formData[1], expiresIn: formData[2]}),
 		contentType: 'application/json',
 		success: function(response) {
 			console.log('Данные успешно отправлены на сервер:', response);

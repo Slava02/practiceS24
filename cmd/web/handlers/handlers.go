@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Slava02/practiceS24/cmd/web/templates"
@@ -43,40 +44,22 @@ func CreateUniverse(app *config.Application) http.HandlerFunc {
 }
 
 func CreateUniversePost(app *config.Application) http.HandlerFunc {
-	log.Printf("INFO: I AM IN CreateUniversePost HANDLER")
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		err := r.ParseForm()
 		if err != nil {
 			log.Printf("Couldnt parse form: %x\n", err)
 			app.ClientError(w, http.StatusBadRequest)
 		}
 
-		x_s := r.PostForm.Get("x")
-		y_s := r.PostForm.Get("y")
-		z_s := r.PostForm.Get("z")
-		m_s := r.PostForm.Get("mass")
+		var obj models.Universe
 
-		log.Printf("PARSED: X-%s, Y-%s, Z-%s, M-%s\n", x_s, y_s, z_s, m_s)
-
-		x, err := strconv.ParseFloat(x_s, 64)
-		y, err := strconv.ParseFloat(y_s, 64)
-		z, err := strconv.ParseFloat(z_s, 64)
-		mass, err := strconv.ParseFloat(m_s, 64)
-
+		err = json.NewDecoder(r.Body).Decode(&obj)
 		if err != nil {
-			app.ServerError(w, err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
-		p := models.NewParams(x, y, z, mass)
-
-		title := r.PostForm.Get("title")
-		expiers, err := strconv.Atoi(r.PostForm.Get("expires"))
-		params := []*models.Params{p}
-
-		obj := models.NewUniverse(title, params, expiers)
-
-		id, err := app.Universe.Insert(obj)
+		id, err := app.Universe.Insert(&obj)
 		if err != nil {
 			app.ServerError(w, err)
 			return

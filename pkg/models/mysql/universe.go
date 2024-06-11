@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"github.com/Slava02/practiceS24/pkg/models"
 	"math"
-	"strconv"
-	"time"
 )
 
 type UniverseModel struct {
@@ -16,12 +14,12 @@ type UniverseModel struct {
 
 func (m *UniverseModel) Insert(obj *models.Universe) (int, error) {
 
-	interval := strconv.Itoa(RoundTime(obj.Expires.Sub(time.Now()).Seconds() / 86400))
+	//interval := strconv.Itoa(RoundTime(obj.Expires.Sub(time.Now()).Seconds() / 86400))
 
 	stmt := `INSERT INTO objects (title, created, expires) 
 	VALUES (?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
 
-	o, err := m.DB.Exec(stmt, obj.Title, interval)
+	o, err := m.DB.Exec(stmt, obj.Title, obj.ExpiresIn)
 	if err != nil {
 		return 0, fmt.Errorf("CAN'T PROCEED INSERT (1): %w", err)
 	}
