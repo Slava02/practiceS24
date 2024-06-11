@@ -3,6 +3,7 @@ package templates
 import (
 	"github.com/Slava02/practiceS24/pkg/models"
 	"html/template"
+	"log"
 	"path/filepath"
 )
 
@@ -39,6 +40,8 @@ func NewTemplateCache(dir string) (map[string]*template.Template, error) {
 
 		cache[name] = ts
 	}
+
+	log.Printf("Cache: %+v\n", cache)
 
 	return cache, nil
 }

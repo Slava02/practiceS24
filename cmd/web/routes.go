@@ -14,7 +14,7 @@ func Routes(app *config.Application) http.Handler {
 
 	r.Get("/", handlers.Home(app))
 	r.Get("/universe/view/{id:^[0-9]+}", handlers.ShowUniverse(app))
-	r.Post("/universe/create", handlers.CreateUniverse(app))
+	r.Get("/universe/create", handlers.CreateUniverse(app))
 	r.Post("/universe/create", handlers.CreateUniversePost(app))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

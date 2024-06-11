@@ -174,11 +174,18 @@ form input[type="radio"] {
 }
 
 form input[type="text"], form input[type="password"], form input[type="email"] {
-    padding: 0.75em 18px;
+    padding: 0.75em 9px;
     width: 100%;
 }
 
 form input[type=text], form input[type="password"], form input[type="email"], textarea {
+    color: #6A6C6F;
+    background: #FFFFFF;
+    border: 1px solid #E4E5E7;
+    border-radius: 3px;
+}
+
+input[type=number] {
     color: #6A6C6F;
     background: #FFFFFF;
     border: 1px solid #E4E5E7;

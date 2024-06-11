@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
+	"math"
+	"strconv"
+	"time"
 )
 
 type UniverseModel struct {
@@ -13,15 +15,13 @@ type UniverseModel struct {
 }
 
 func (m *UniverseModel) Insert(obj *models.Universe) (int, error) {
-	//tx, err := m.DB.Begin()
-	//if err != nil {
-	//	return 0, fmt.Errorf("CAN'T PROCEED INSERT: %w", err)
-	//}
+
+	interval := strconv.Itoa(RoundTime(obj.Expires.Sub(time.Now()).Seconds() / 86400))
 
 	stmt := `INSERT INTO objects (title, created, expires) 
 	VALUES (?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
 
-	o, err := m.DB.Exec(stmt, obj.Title, config.ExpiesIn)
+	o, err := m.DB.Exec(stmt, obj.Title, interval)
 	if err != nil {
 		return 0, fmt.Errorf("CAN'T PROCEED INSERT (1): %w", err)
 	}
@@ -40,11 +40,6 @@ func (m *UniverseModel) Insert(obj *models.Universe) (int, error) {
 			return 0, fmt.Errorf("CAN'T PROCEED INSERT (3): %w", err)
 		}
 	}
-
-	//err = tx.Commit()
-	//if err != nil {
-	//	return 0, fmt.Errorf("CAN'T PROCEED INSERT: %w", err)
-	//}
 
 	return int(id), nil
 }
@@ -152,4 +147,16 @@ func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 	}
 
 	return objects, nil
+}
+
+func RoundTime(input float64) int {
+	var result float64
+	if input < 0 {
+		result = math.Ceil(input - 0.5)
+	} else {
+		result = math.Floor(input + 0.5)
+	}
+	// only interested in integer, ignore fractional
+	i, _ := math.Modf(result)
+	return int(i)
 }

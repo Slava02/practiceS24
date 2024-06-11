@@ -7,12 +7,12 @@ import (
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models"
 	"github.com/go-chi/chi/v5"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func ShowUniverse(app *config.Application) http.HandlerFunc {
-	// log.Printf("\nShowUniverse API call\n")
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParamFromCtx(r.Context(), "id"))
 		if err != nil || id < 1 {
@@ -21,18 +21,15 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 		}
 
 		universe, err := app.Universe.Get(id)
-		// log.Printf("INFO: Got Universe: %+v\n", universe)
 		if err != nil {
 			if errors.Is(err, models.ErrNoRecord) {
 				app.NotFound(w)
 			} else {
-				// log.Printf("ShowUniverse Server Error:\n")
 				app.ServerError(w, err)
 			}
 			return
 		}
 
-		//fmt.Fprintf(w, "%+v", universe)
 		app.Render(w, r, "show.page.tmpl", &templates.TemplateData{
 			Universe: universe,
 		})
@@ -41,69 +38,62 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 
 func CreateUniverse(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Display the form for creating a new snippet..."))
+		app.Render(w, r, "create.page.tmpl", new(templates.TemplateData))
 	}
 }
 
 func CreateUniversePost(app *config.Application) http.HandlerFunc {
-	// log.Printf("INFO: CreateUniversePost API call\n")
+	log.Printf("INFO: I AM IN CreateUniversePost HANDLER")
 	return func(w http.ResponseWriter, r *http.Request) {
-		//if r.Method != http.MethodPost {
-		//	w.Header().Set("Allow", http.MethodPost)
-		//	app.ClientError(w, http.StatusMethodNotAllowed)
-		//}
 
-		obj := &models.Universe{
-			Title: `Вселенная теста`,
-			Params: []*models.Params{
-				{
-					Coord: &models.Coord{
-						X: 1.,
-						Y: 2.,
-						Z: 3.,
-					},
-					Mass: 4.,
-				},
-				{
-					Coord: &models.Coord{
-						X: 10.,
-						Y: 20.,
-						Z: 30.,
-					},
-					Mass: 40.,
-				},
-			},
+		err := r.ParseForm()
+		if err != nil {
+			log.Printf("Couldnt parse form: %x\n", err)
+			app.ClientError(w, http.StatusBadRequest)
 		}
+
+		x_s := r.PostForm.Get("x")
+		y_s := r.PostForm.Get("y")
+		z_s := r.PostForm.Get("z")
+		m_s := r.PostForm.Get("mass")
+
+		log.Printf("PARSED: X-%s, Y-%s, Z-%s, M-%s\n", x_s, y_s, z_s, m_s)
+
+		x, err := strconv.ParseFloat(x_s, 64)
+		y, err := strconv.ParseFloat(y_s, 64)
+		z, err := strconv.ParseFloat(z_s, 64)
+		mass, err := strconv.ParseFloat(m_s, 64)
+
+		if err != nil {
+			app.ServerError(w, err)
+		}
+
+		p := models.NewParams(x, y, z, mass)
+
+		title := r.PostForm.Get("title")
+		expiers, err := strconv.Atoi(r.PostForm.Get("expires"))
+		params := []*models.Params{p}
+
+		obj := models.NewUniverse(title, params, expiers)
 
 		id, err := app.Universe.Insert(obj)
 		if err != nil {
-			// log.Printf("ERROR: CreateUniversePost ServerError:\n")
 			app.ServerError(w, err)
 			return
 		}
 
-		// log.Printf("INFO: Redirect to /universe?id=%d\n", id)
 		http.Redirect(w, r, fmt.Sprintf("/universe/view/%d", id), http.StatusSeeOther)
 	}
 }
 
 func Home(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//if r.URL.Path != "/" {
-		//	app.NotFound(w)
-		//	return
-		//}
-
 		universes, err := app.Universe.Latest(config.ShowOnMain)
 
 		if err != nil {
 			app.ServerError(w, err)
 			return
 		}
-
-		//for _, obj := range universe {
-		//	fmt.Fprintf(w, "%v\n", *obj)
-		//}
 
 		app.Render(w, r, "home.page.tmpl", &templates.TemplateData{
 			Universes: universes,

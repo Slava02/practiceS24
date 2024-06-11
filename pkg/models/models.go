@@ -21,6 +21,14 @@ type Universe struct {
 	Expires time.Time
 }
 
+func NewUniverse(title string, params []*Params, expires int) *Universe {
+	return &Universe{
+		Title:   title,
+		Params:  params,
+		Expires: time.Now().AddDate(0, 0, expires),
+	}
+}
+
 type Params struct {
 	Coord *Coord
 	Mass  float64
@@ -28,4 +36,15 @@ type Params struct {
 
 type Coord struct {
 	X, Y, Z float64
+}
+
+func NewParams(x, y, z, mass float64) *Params {
+	return &Params{
+		Coord: &Coord{
+			X: x,
+			Y: y,
+			Z: z,
+		},
+		Mass: mass,
+	}
 }

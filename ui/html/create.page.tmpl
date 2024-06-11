@@ -1,0 +1,13 @@
+{{template "base" .}}
+
+{{define "title"}}Заметка {{end}}
+
+{{define "main"}}
+<form id="mainForm">
+    <label for="num">Введите количество тел:</label>
+    <input type="number" id="num" name="int" value="0">
+    <button type="button" id="createBtn">Создать формы</button>
+</form>
+<br>
+<div class="form-сontainer"></div>
+{{end}}
