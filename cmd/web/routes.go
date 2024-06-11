@@ -18,6 +18,10 @@ func Routes(app *config.Application) http.Handler {
 	r.Post("/universe/create", handlers.CreateUniverse(app))
 	r.Post("/universe/create", handlers.CreateUniversePost(app))
 
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		app.NotFound(w)
+	})
+
 	FileServer(r, "/files", http.Dir("./ui/static/"))
 
 	return r
@@ -36,7 +40,7 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 
 	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
 		rctx := chi.RouteContext(r.Context())
-		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/universe/static/")
+		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/universe/static/*")
 		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
 		fs.ServeHTTP(w, r)
 	})
