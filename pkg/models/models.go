@@ -17,6 +17,7 @@ type Universe struct {
 	ID        int       `json:"id,omitempty"`
 	Title     string    `json:"title"`
 	Params    []*Params `json:"params"`
+	Center    *Coord    `json:"center,omitempty"`
 	Created   time.Time `json:"created,omitempty"`
 	ExpiresIn int       `json:"expiresIn"`
 	Expires   time.Time `json:"expires,omitempty"`

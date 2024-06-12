@@ -65,7 +65,8 @@ func CreateUniversePost(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		http.Redirect(w, r, fmt.Sprintf("/universe/view/%d", id), http.StatusSeeOther)
+		//http.Redirect(w, r, fmt.Sprintf("/universe/view/%d", id), http.StatusSeeOther)
+		fmt.Fprintf(w, fmt.Sprintf("%d", id))
 	}
 }
 

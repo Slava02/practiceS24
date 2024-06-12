@@ -13,6 +13,9 @@
             <pre><code>#{{$index}} X:{{$value.Coord.X}} Y:{{$value.Coord.Y}} Z:{{$value.Coord.Z}} Mass:{{$value.Mass}}</code></pre>
         {{end}}
         <div class='metadata'>
+            <strong>Центр: X:{{.Center.X}} Y:{{.Center.Y}} Z:{{.Center.Z}}</strong>
+        </div>
+        <div class='metadata'>
             <time>Создан: {{.Created}}</time>
             <time>Срок: {{.Expires}}</time>
         </div>

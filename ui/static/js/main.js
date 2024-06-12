@@ -95,8 +95,9 @@ $(document).on('click', '.submitBtn', function(){
 		method: 'POST',
 		data: JSON.stringify({title: formData[0], params: formData[1], expiresIn: formData[2]}),
 		contentType: 'application/json',
-		success: function(response) {
-			console.log('Данные успешно отправлены на сервер:', response);
+		success: function(data, textStatus) {
+			console.log("data Redirect: ", data.redirect)
+			window.location = '/universe/view/' + data;
 		},
 		error: function(error) {
 			console.error('Ошибка при отправке данных на сервер:', error);

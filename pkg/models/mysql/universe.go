@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Slava02/practiceS24/pkg/models"
+	"log"
 	"math"
 )
 
@@ -39,11 +40,21 @@ func (m *UniverseModel) Insert(obj *models.Universe) (int, error) {
 		}
 	}
 
+	center := GetCenter(obj)
+
+	stmt = `INSERT INTO center (id, x, y, z) 
+			VALUES (?, ?, ?, ?)`
+
+	_, err = m.DB.Exec(stmt, id, center.X, center.Y, center.Z)
+	if err != nil {
+		return 0, fmt.Errorf("CAN'T PROCEED INSERT (3): %w", err)
+	}
+
 	return int(id), nil
 }
 
 func (m *UniverseModel) Get(id int) (*models.Universe, error) {
-	o := &models.Universe{}
+	o := &models.Universe{Center: &models.Coord{}}
 
 	//tx, err := m.DB.Begin()
 
@@ -72,7 +83,7 @@ func (m *UniverseModel) Get(id int) (*models.Universe, error) {
 		p := &models.Params{
 			Coord: &models.Coord{},
 		}
-		err = rows.Scan(&p.Coord.X, &p.Coord.X, &p.Coord.X, &p.Mass)
+		err = rows.Scan(&p.Coord.X, &p.Coord.Y, &p.Coord.Z, &p.Mass)
 		// log.Printf("INFO: Got params: %+v\n", p)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -81,14 +92,26 @@ func (m *UniverseModel) Get(id int) (*models.Universe, error) {
 				return nil, fmt.Errorf("CAN'T GET OBJECT (3): %w", err)
 			}
 		}
+		log.Printf("GOT PARAMS: %+v\n", p.Coord)
 		o.Params = append(o.Params, p)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, fmt.Errorf("CAN'T GET OBJECT (4): %w", err)
 	}
 
-	//err = tx.Commit()
-	// log.Printf("INFO: Send object: %+v\n", o)
+	stmt = `SELECT x, y, z FROM center WHERE id = ?`
+
+	err = m.DB.QueryRow(stmt, id).Scan(&o.Center.X, &o.Center.Y, &o.Center.Z)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, fmt.Errorf("CAN'T GET OBJECT (1): %w", err)
+		}
+	}
+
+	log.Printf("GOT OBJECT %+v PARAMS: %+v, CENTER: %+v", o, o.Params[0].Coord, o.Center)
+
 	return o, nil
 }
 
@@ -101,6 +124,10 @@ func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 			 FROM params 
 			 WHERE id = ?`
 
+	stmt3 := `SELECT x, y, z
+			 FROM center 
+			 WHERE id = ?`
+
 	rows_o, err := m.DB.Query(stmt1, num)
 	if err != nil {
 		return nil, fmt.Errorf("CAN'T GET LATEST (1): %w", err)
@@ -110,7 +137,7 @@ func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 	var objects []*models.Universe
 
 	for rows_o.Next() {
-		o := &models.Universe{}
+		o := &models.Universe{Center: &models.Coord{}}
 		err = rows_o.Scan(&o.ID, &o.Title, &o.Created, &o.Expires)
 		// log.Printf("INFO: Got object values: %+v\n", o)
 		if err != nil {
@@ -136,6 +163,15 @@ func (m *UniverseModel) Latest(num int) ([]*models.Universe, error) {
 			o.Params = append(o.Params, p)
 		}
 
+		err = m.DB.QueryRow(stmt3, o.ID).Scan(&o.Center.X, &o.Center.Y, &o.Center.Z)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, models.ErrNoRecord
+			} else {
+				return nil, fmt.Errorf("CAN'T GET LATEST: %w", err)
+			}
+		}
+
 		objects = append(objects, o)
 		rows_p.Close()
 	}
@@ -157,4 +193,18 @@ func RoundTime(input float64) int {
 	// only interested in integer, ignore fractional
 	i, _ := math.Modf(result)
 	return int(i)
+}
+
+func GetCenter(obj *models.Universe) *models.Coord {
+	res := &models.Coord{}
+	for _, params := range obj.Params {
+		res.X += params.Coord.X
+		res.Y += params.Coord.Y
+		res.Z += params.Coord.Z
+	}
+	res.X /= float64(len(obj.Params))
+	res.Y /= float64(len(obj.Params))
+	res.Z /= float64(len(obj.Params))
+
+	return res
 }
