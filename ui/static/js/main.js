@@ -32,17 +32,17 @@ function createForms() {
 					<form class="myForm">
 						<label>Точка №${i}</label>
 						<br>
-						<label for="x${i}">Координата x (float):</label>
-						<input type="number" step="any" id="x${i}" name="x${i}" required>
+						<label for="x${i}">Координата x:</label>
+						<input type="number" step="0.01" id="x${i}" name="x${i}" required>
 						<br>
-						<label for="y${i}">Координата y (float):</label>
-						<input type="number" step="any" id="y${i}" name="y${i}" required>
+						<label for="y${i}">Координата y:</label>
+						<input type="number" step="0.01" id="y${i}" name="y${i}" required>
 						<br>
-						<label for="z${i}">Координата z (float):</label>
-						<input type="number" step="any" id="z${i}" name="z${i}" required>
+						<label for="z${i}">Координата z:</label>
+						<input type="number" step="0.01" id="z${i}" name="z${i}" required>
 						<br>
-						<label for="mass${i}">Масса (float):</label>
-						<input type="number" step="any" id="mass${i}" name="mass${i}" required>
+						<label for="mass${i}">Масса:</label>
+						<input type="number" min="0" step="0.01" id="mass${i}" name="mass${i}" required>
 						<br><br>
 					</form>
                 `;

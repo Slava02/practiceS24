@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"github.com/Slava02/practiceS24/cmd/web/validator"
 	"time"
 )
 
@@ -15,12 +16,13 @@ type Storage interface {
 
 type Universe struct {
 	ID        int       `json:"id,omitempty"`
-	Title     string    `json:"title"`
-	Params    []*Params `json:"params"`
+	Title     string    `json:"title" validate:"required"`
+	Params    []*Params `json:"params" validate:"required"`
 	Center    *Coord    `json:"center,omitempty"`
 	Created   time.Time `json:"created,omitempty"`
-	ExpiresIn int       `json:"expiresIn"`
+	ExpiresIn int       `json:"expiresIn" validate:"required"`
 	Expires   time.Time `json:"expires,omitempty"`
+	validator.Validator
 }
 
 func NewUniverse(title string, params []*Params, expires int) *Universe {
@@ -32,14 +34,14 @@ func NewUniverse(title string, params []*Params, expires int) *Universe {
 }
 
 type Params struct {
-	Coord *Coord  `json:"coord"`
-	Mass  float64 `json:"mass"`
+	Coord *Coord  `json:"coord" validate:"required"`
+	Mass  float64 `json:"mass" validate:"required"`
 }
 
 type Coord struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-	Z float64 `json:"z"`
+	X float64 `json:"x" validate:"required"`
+	Y float64 `json:"y" validate:"required"`
+	Z float64 `json:"z" validate:"required"`
 }
 
 func NewParams(x, y, z, mass float64) *Params {
