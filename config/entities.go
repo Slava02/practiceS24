@@ -19,9 +19,10 @@ const (
 type Application struct {
 	ErrorLog       *log.Logger
 	InfoLog        *log.Logger
-	Universe       models.Storage
+	Universe       models.UniverseModel
 	TemplateCache  map[string]*template.Template
 	SessionManager *scs.SessionManager
+	Users          models.UserModel
 }
 
 func (app *Application) ServerError(w http.ResponseWriter, err error) {

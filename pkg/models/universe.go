@@ -6,9 +6,13 @@ import (
 	"time"
 )
 
-var ErrNoRecord = errors.New("models: подходящей записи не найдено")
+var (
+	ErrNoRecord           = errors.New("models: подходящей записи не найдено")
+	ErrInvalidCredentials = errors.New("models: invalid credentials")
+	ErrDuplicateEmail     = errors.New("models: duplicate email")
+)
 
-type Storage interface {
+type UniverseModel interface {
 	Insert(obj *Universe) (int, error)
 	Get(id int) (*Universe, error)
 	Latest(num int) ([]*Universe, error)

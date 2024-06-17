@@ -17,6 +17,12 @@ func Routes(app *config.Application) http.Handler {
 	r.Get("/universe/create", handlers.CreateUniverse(app))
 	r.Post("/universe/create", handlers.CreateUniversePost(app))
 
+	r.Get("/user/signup", handlers.UserSignup(app))
+	r.Post("/user/signup", handlers.UserSignupPost(app))
+	r.Get("/user/login", handlers.UserLogin(app))
+	r.Post("/user/login", handlers.UserLoginPost(app))
+	r.Post("/user/logout", handlers.UserLogoutPost(app))
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		app.NotFound(w)
 	})

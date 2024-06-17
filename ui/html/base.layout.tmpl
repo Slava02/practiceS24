@@ -12,8 +12,17 @@
             <h1><a href='/'>MultiUniverse</a></h1>
         </header>
         <nav>
-            <a href='/'>Домашняя страница</a>
-            <a href='/universe/create'>Новая вселенная</a>
+            <div>
+                <a href='/'>Домашняя страница</a>
+                <a href='/universe/create'>Новая вселенная</a>
+            </div>
+            <div>
+                <a href='/user/signup'>Регистрация</a>
+                <a href='/user/login'>Войти</a>
+                <form action='/user/logout' method='POST'>
+                    <button>Выйти</button>
+                </form>
+            </div>
         </nav>
         <main>
             {{with .Flash}}

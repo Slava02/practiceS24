@@ -96,3 +96,33 @@ func Home(app *config.Application) http.HandlerFunc {
 		})
 	}
 }
+
+func UserSignup(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Display a HTML form for signing up a new user...")
+	}
+}
+
+func UserSignupPost(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Create a new user...")
+	}
+}
+
+func UserLogin(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
+	}
+}
+
+func UserLoginPost(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
+	}
+}
+
+func UserLogoutPost(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
+	}
+}

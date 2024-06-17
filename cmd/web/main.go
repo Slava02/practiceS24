@@ -45,6 +45,7 @@ func main() {
 		Universe:       &mysql.UniverseModel{DB: db},
 		TemplateCache:  templateCache,
 		SessionManager: sessionManager,
+		Users:          &mysql.UserModel{DB: db},
 	}
 
 	srv := &http.Server{
