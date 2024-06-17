@@ -2,15 +2,14 @@ package main
 
 import (
 	"github.com/Slava02/practiceS24/cmd/web/handlers"
-	"github.com/Slava02/practiceS24/config"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
-func Routes(app *config.Application) http.Handler {
+func Routes(app *Application) http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(app.SessionManager.LoadAndSave, app.LogRequest, config.SecureHeaders)
+	r.Use(app.SessionManager.LoadAndSave, app.LogRequest, SecureHeaders)
 
 	r.Get("/", handlers.Home(app))
 	r.Get("/universe/view/{id:^[0-9]+}", handlers.ShowUniverse(app))

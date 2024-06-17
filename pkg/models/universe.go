@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"github.com/Slava02/practiceS24/cmd/web/validator"
+	"github.com/Slava02/practiceS24/pkg/validator"
 	"time"
 )
 

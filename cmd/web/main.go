@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	"github.com/Slava02/practiceS24/cmd/web/templates"
-	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models/mysql"
 	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/v2"
@@ -39,7 +38,7 @@ func main() {
 	sessionManager.Lifetime = 12 * time.Hour
 	sessionManager.Cookie.Secure = true
 
-	app := &config.Application{
+	app := &Application{
 		ErrorLog:       errorLog,
 		InfoLog:        infoLog,
 		Universe:       &mysql.UniverseModel{DB: db},

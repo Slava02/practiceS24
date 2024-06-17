@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"fmt"
@@ -13,7 +13,6 @@ import (
 
 const (
 	ShowOnMain = 10
-	ExpiesIn   = 7
 )
 
 type Application struct {

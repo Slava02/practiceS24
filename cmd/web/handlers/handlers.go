@@ -4,17 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Slava02/practiceS24/cmd/web"
 	"github.com/Slava02/practiceS24/cmd/web/templates"
-	"github.com/Slava02/practiceS24/cmd/web/validator"
-	"github.com/Slava02/practiceS24/config"
+	"github.com/Slava02/practiceS24/pkg/forms"
 	"github.com/Slava02/practiceS24/pkg/models"
+	"github.com/Slava02/practiceS24/pkg/validator"
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-func ShowUniverse(app *config.Application) http.HandlerFunc {
+func ShowUniverse(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParamFromCtx(r.Context(), "id"))
 		if err != nil || id < 1 {
@@ -39,13 +40,13 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 	}
 }
 
-func CreateUniverse(app *config.Application) http.HandlerFunc {
+func CreateUniverse(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		app.Render(w, r, "create.page.tmpl", new(templates.TemplateData))
 	}
 }
 
-func CreateUniversePost(app *config.Application) http.HandlerFunc {
+func CreateUniversePost(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
@@ -82,9 +83,9 @@ func CreateUniversePost(app *config.Application) http.HandlerFunc {
 	}
 }
 
-func Home(app *config.Application) http.HandlerFunc {
+func Home(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		universes, err := app.Universe.Latest(config.ShowOnMain)
+		universes, err := app.Universe.Latest(main.ShowOnMain)
 
 		if err != nil {
 			app.ServerError(w, err)
@@ -97,31 +98,34 @@ func Home(app *config.Application) http.HandlerFunc {
 	}
 }
 
-func UserSignup(app *config.Application) http.HandlerFunc {
+func UserSignup(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Display a HTML form for signing up a new user...")
+		app.Render(w, r, "home.page.tmpl", &templates.TemplateData{
+			Forms: forms.NewForm(nil),
+		})
+		//fmt.Fprintln(w, "Display a HTML form for signing up a new user...")
 	}
 }
 
-func UserSignupPost(app *config.Application) http.HandlerFunc {
+func UserSignupPost(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Create a new user...")
 	}
 }
 
-func UserLogin(app *config.Application) http.HandlerFunc {
+func UserLogin(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
 }
 
-func UserLoginPost(app *config.Application) http.HandlerFunc {
+func UserLoginPost(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
 }
 
-func UserLogoutPost(app *config.Application) http.HandlerFunc {
+func UserLogoutPost(app *main.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
