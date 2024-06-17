@@ -16,6 +16,9 @@
             <a href='/universe/create'>Новая вселенная</a>
         </nav>
         <main>
+            {{with .Flash}}
+                <div class="flash">{{.}}</div>
+            {{end}}
             {{template "main" .}}
         </main>
         {{template "footer" .}}

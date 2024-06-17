@@ -34,6 +34,7 @@ func ShowUniverse(app *config.Application) http.HandlerFunc {
 
 		app.Render(w, r, "show.page.tmpl", &templates.TemplateData{
 			Universe: universe,
+			Flash:    app.SessionManager.PopString(r.Context(), "flash"),
 		})
 	}
 }
@@ -69,13 +70,13 @@ func CreateUniversePost(app *config.Application) http.HandlerFunc {
 
 		if !obj.Valid() {
 			app.ClientError(w, http.StatusUnprocessableEntity)
-
 		} else {
 			id, err := app.Universe.Insert(&obj)
 			if err != nil {
 				app.ServerError(w, err)
 				return
 			}
+			app.SessionManager.Put(r.Context(), "flash", "Вселенная успешно создана!")
 			fmt.Fprintf(w, fmt.Sprintf("%d", id))
 		}
 	}

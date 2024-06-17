@@ -10,7 +10,7 @@ import (
 func Routes(app *config.Application) http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(app.LogRequest, config.SecureHeaders)
+	r.Use(app.SessionManager.LoadAndSave, app.LogRequest, config.SecureHeaders)
 
 	r.Get("/", handlers.Home(app))
 	r.Get("/universe/view/{id:^[0-9]+}", handlers.ShowUniverse(app))

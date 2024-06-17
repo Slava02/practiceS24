@@ -6,10 +6,13 @@ import (
 	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/config"
 	"github.com/Slava02/practiceS24/pkg/models/mysql"
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -31,11 +34,16 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
+	sessionManager := scs.New()
+	sessionManager.Store = mysqlstore.New(db)
+	sessionManager.Lifetime = 12 * time.Hour
+
 	app := &config.Application{
-		ErrorLog:      errorLog,
-		InfoLog:       infoLog,
-		Universe:      &mysql.UniverseModel{DB: db},
-		TemplateCache: templateCache,
+		ErrorLog:       errorLog,
+		InfoLog:        infoLog,
+		Universe:       &mysql.UniverseModel{DB: db},
+		TemplateCache:  templateCache,
+		SessionManager: sessionManager,
 	}
 
 	srv := &http.Server{

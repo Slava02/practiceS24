@@ -10,6 +10,7 @@ import (
 type TemplateData struct {
 	Universe  *models.Universe
 	Universes []*models.Universe
+	Flash     string
 }
 
 func NewTemplateCache(dir string) (map[string]*template.Template, error) {

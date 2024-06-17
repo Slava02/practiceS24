@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/pkg/models"
+	"github.com/alexedwards/scs/v2"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,10 +17,11 @@ const (
 )
 
 type Application struct {
-	ErrorLog      *log.Logger
-	InfoLog       *log.Logger
-	Universe      models.Storage
-	TemplateCache map[string]*template.Template
+	ErrorLog       *log.Logger
+	InfoLog        *log.Logger
+	Universe       models.Storage
+	TemplateCache  map[string]*template.Template
+	SessionManager *scs.SessionManager
 }
 
 func (app *Application) ServerError(w http.ResponseWriter, err error) {
