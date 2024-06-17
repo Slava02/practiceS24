@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/pkg/models"
 	"github.com/alexedwards/scs/v2"
 	"html/template"
@@ -39,7 +38,7 @@ func (app *Application) NotFound(w http.ResponseWriter) {
 	app.ClientError(w, http.StatusNotFound)
 }
 
-func (app *Application) Render(w http.ResponseWriter, r *http.Request, name string, td *templates.TemplateData) {
+func (app *Application) Render(w http.ResponseWriter, r *http.Request, name string, td *TemplateData) {
 	ts, ok := app.TemplateCache[name]
 	if !ok {
 		app.ServerError(w, fmt.Errorf("Шаблон %s не существует!", name))

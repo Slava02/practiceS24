@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Slava02/practiceS24/cmd/web/handlers"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
@@ -11,16 +10,16 @@ func Routes(app *Application) http.Handler {
 
 	r.Use(app.SessionManager.LoadAndSave, app.LogRequest, SecureHeaders)
 
-	r.Get("/", handlers.Home(app))
-	r.Get("/universe/view/{id:^[0-9]+}", handlers.ShowUniverse(app))
-	r.Get("/universe/create", handlers.CreateUniverse(app))
-	r.Post("/universe/create", handlers.CreateUniversePost(app))
+	r.Get("/", Home(app))
+	r.Get("/universe/view/{id:^[0-9]+}", ShowUniverse(app))
+	r.Get("/universe/create", CreateUniverse(app))
+	r.Post("/universe/create", CreateUniversePost(app))
 
-	r.Get("/user/signup", handlers.UserSignup(app))
-	r.Post("/user/signup", handlers.UserSignupPost(app))
-	r.Get("/user/login", handlers.UserLogin(app))
-	r.Post("/user/login", handlers.UserLoginPost(app))
-	r.Post("/user/logout", handlers.UserLogoutPost(app))
+	r.Get("/user/signup", UserSignup(app))
+	r.Post("/user/signup", UserSignupPost(app))
+	r.Get("/user/login", UserLogin(app))
+	r.Post("/user/login", UserLoginPost(app))
+	r.Post("/user/logout", UserLogoutPost(app))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		app.NotFound(w)

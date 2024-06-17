@@ -1,4 +1,4 @@
-package templates
+package main
 
 import (
 	"github.com/Slava02/practiceS24/pkg/forms"
@@ -11,7 +11,7 @@ import (
 type TemplateData struct {
 	Universe  *models.Universe
 	Universes []*models.Universe
-	Forms     *forms.Form
+	Form      *forms.Form
 	Flash     string
 }
 

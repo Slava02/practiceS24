@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"github.com/Slava02/practiceS24/cmd/web/templates"
 	"github.com/Slava02/practiceS24/pkg/models/mysql"
 	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/v2"
@@ -28,7 +27,7 @@ func main() {
 	}
 	defer db.Close()
 
-	templateCache, err := templates.NewTemplateCache("./ui/html/")
+	templateCache, err := NewTemplateCache("./ui/html/")
 	if err != nil {
 		errorLog.Fatal(err)
 	}

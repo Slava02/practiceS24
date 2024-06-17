@@ -1,11 +1,10 @@
-package handlers
+package main
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Slava02/practiceS24/cmd/web"
-	"github.com/Slava02/practiceS24/cmd/web/templates"
+
 	"github.com/Slava02/practiceS24/pkg/forms"
 	"github.com/Slava02/practiceS24/pkg/models"
 	"github.com/Slava02/practiceS24/pkg/validator"
@@ -15,7 +14,7 @@ import (
 	"strconv"
 )
 
-func ShowUniverse(app *main.Application) http.HandlerFunc {
+func ShowUniverse(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParamFromCtx(r.Context(), "id"))
 		if err != nil || id < 1 {
@@ -33,20 +32,20 @@ func ShowUniverse(app *main.Application) http.HandlerFunc {
 			return
 		}
 
-		app.Render(w, r, "show.page.tmpl", &templates.TemplateData{
+		app.Render(w, r, "show.page.tmpl", &TemplateData{
 			Universe: universe,
 			Flash:    app.SessionManager.PopString(r.Context(), "flash"),
 		})
 	}
 }
 
-func CreateUniverse(app *main.Application) http.HandlerFunc {
+func CreateUniverse(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		app.Render(w, r, "create.page.tmpl", new(templates.TemplateData))
+		app.Render(w, r, "create.page.tmpl", new(TemplateData))
 	}
 }
 
-func CreateUniversePost(app *main.Application) http.HandlerFunc {
+func CreateUniversePost(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
@@ -83,49 +82,49 @@ func CreateUniversePost(app *main.Application) http.HandlerFunc {
 	}
 }
 
-func Home(app *main.Application) http.HandlerFunc {
+func Home(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		universes, err := app.Universe.Latest(main.ShowOnMain)
+		universes, err := app.Universe.Latest(ShowOnMain)
 
 		if err != nil {
 			app.ServerError(w, err)
 			return
 		}
 
-		app.Render(w, r, "home.page.tmpl", &templates.TemplateData{
+		app.Render(w, r, "home.page.tmpl", &TemplateData{
 			Universes: universes,
 		})
 	}
 }
 
-func UserSignup(app *main.Application) http.HandlerFunc {
+func UserSignup(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		app.Render(w, r, "home.page.tmpl", &templates.TemplateData{
-			Forms: forms.NewForm(nil),
+		app.Render(w, r, "signup.page.tmpl", &TemplateData{
+			Form: forms.NewForm(nil),
 		})
 		//fmt.Fprintln(w, "Display a HTML form for signing up a new user...")
 	}
 }
 
-func UserSignupPost(app *main.Application) http.HandlerFunc {
+func UserSignupPost(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Create a new user...")
 	}
 }
 
-func UserLogin(app *main.Application) http.HandlerFunc {
+func UserLogin(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
 }
 
-func UserLoginPost(app *main.Application) http.HandlerFunc {
+func UserLoginPost(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
 }
 
-func UserLogoutPost(app *main.Application) http.HandlerFunc {
+func UserLogoutPost(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
