@@ -1,18 +1,19 @@
 package main
 
 import (
-	"github.com/Slava02/practiceS24/pkg/forms"
 	"github.com/Slava02/practiceS24/pkg/models"
+	"github.com/Slava02/practiceS24/pkg/validator"
 	"html/template"
 	"log"
 	"path/filepath"
 )
 
 type TemplateData struct {
-	Universe  *models.Universe
-	Universes []*models.Universe
-	Form      *forms.Form
-	Flash     string
+	Universe        *models.Universe
+	Universes       []*models.Universe
+	Form            *validator.Form
+	Flash           string
+	IsAuthenticated bool
 }
 
 func NewTemplateCache(dir string) (map[string]*template.Template, error) {

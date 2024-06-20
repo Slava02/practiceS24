@@ -1,4 +1,4 @@
-package forms
+package validator
 
 type formErrors map[string][]string
 

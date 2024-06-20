@@ -1,7 +1,13 @@
 package models
 
 import (
+	"errors"
 	"time"
+)
+
+var (
+	ErrInvalidCredentials = errors.New("models: invalid credentials")
+	ErrDuplicateEmail     = errors.New("models: duplicate email")
 )
 
 type UserModel interface {

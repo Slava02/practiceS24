@@ -14,7 +14,9 @@
         <nav>
             <div>
                 <a href='/'>Домашняя страница</a>
-                <a href='/universe/create'>Новая вселенная</a>
+                {{if .IsAuthenticated}}
+                    <a href='/universe/create'>Новая вселенная</a>
+                {{end}}
             </div>
             <div>
                 <a href='/user/signup'>Регистрация</a>

@@ -7,19 +7,20 @@
     {{with .Form}}
     <div>
         <label>Никнейм:</label>
-        {{with .FormErrors.Get "name"}}
+        {{with .Errors.Get "name"}}
         <label class='error'>{{.}}</label>
         {{end}}
         <input type='text' name='name' value='{{.Get "name"}}'>
     </div>
     <div>
         <label>Почта:</label>
-        {{with .FormErrors.Get "email"}}
-        <label class='error'>{{.}}</label> {{end}}
+        {{with .Errors.Get "email"}}
+        <label class='error'>{{.}}</label>
+        {{end}}
         <input type='email' name='email' value='{{.Get "email"}}'> </div>
     <div>
         <label>Пароль:</label>
-        {{with .FormErrors.Get "password"}}
+        {{with .Errors.Get "password"}}
         <label class='error'>{{.}}</label> {{end}}
         <input type='password' name='password'>
     </div>

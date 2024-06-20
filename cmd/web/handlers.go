@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Slava02/practiceS24/pkg/forms"
 	"github.com/Slava02/practiceS24/pkg/models"
 	"github.com/Slava02/practiceS24/pkg/validator"
 	"github.com/go-chi/chi/v5"
@@ -33,15 +32,19 @@ func ShowUniverse(app *Application) http.HandlerFunc {
 		}
 
 		app.Render(w, r, "show.page.tmpl", &TemplateData{
-			Universe: universe,
-			Flash:    app.SessionManager.PopString(r.Context(), "flash"),
+			Universe:        universe,
+			Flash:           app.SessionManager.PopString(r.Context(), "flash"),
+			IsAuthenticated: app.IsAuthenticated(r),
 		})
 	}
 }
 
 func CreateUniverse(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		app.Render(w, r, "create.page.tmpl", new(TemplateData))
+		app.Render(w, r, "create.page.tmpl", &TemplateData{
+			Flash:           app.SessionManager.PopString(r.Context(), "flash"),
+			IsAuthenticated: app.IsAuthenticated(r),
+		})
 	}
 }
 
@@ -92,40 +95,118 @@ func Home(app *Application) http.HandlerFunc {
 		}
 
 		app.Render(w, r, "home.page.tmpl", &TemplateData{
-			Universes: universes,
+			Universes:       universes,
+			Flash:           app.SessionManager.PopString(r.Context(), "flash"),
+			IsAuthenticated: app.IsAuthenticated(r),
 		})
+	}
+}
+
+func UserSignupPost(app *Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			app.ClientError(w, http.StatusBadRequest)
+			return
+		}
+
+		form := validator.NewForm(r.PostForm)
+		form.Required("name", "email", "password")
+		form.MatchesPattern("email", validator.EmailRX)
+		form.MinLength("password", 5)
+
+		err = app.Users.Insert(form.Get("name"), form.Get("email"), form.Get("password"))
+		if err == models.ErrDuplicateEmail {
+			form.Errors.Add("email", "Почта уже используется")
+		} else if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+
+		if !form.Valid() {
+			app.Render(w, r, "signup.page.tmpl", &TemplateData{
+				Form:            form,
+				IsAuthenticated: app.IsAuthenticated(r),
+			})
+			return
+		}
+
+		app.SessionManager.Put(r.Context(), "flash", "Вы успешно зарегестрировались. Войдите")
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 	}
 }
 
 func UserSignup(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		app.Render(w, r, "signup.page.tmpl", &TemplateData{
-			Form: forms.NewForm(nil),
+			Form:            validator.NewForm(nil),
+			IsAuthenticated: app.IsAuthenticated(r),
 		})
-		//fmt.Fprintln(w, "Display a HTML form for signing up a new user...")
-	}
-}
-
-func UserSignupPost(app *Application) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Create a new user...")
-	}
-}
-
-func UserLogin(app *Application) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
 	}
 }
 
 func UserLoginPost(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
+		err := r.ParseForm()
+		if err != nil {
+			app.ClientError(w, http.StatusBadRequest)
+			return
+		}
+
+		form := validator.NewForm(r.PostForm)
+		form.Required("email", "password")
+
+		if !form.Valid() {
+			app.Render(w, r, "login.page.tmpl", &TemplateData{
+				Form:            form,
+				Flash:           app.SessionManager.PopString(r.Context(), "flash"),
+				IsAuthenticated: app.IsAuthenticated(r),
+			})
+			return
+		}
+		id, err := app.Users.Authenticate(form.Get("email"), form.Get("password"))
+		if err != nil {
+			if errors.Is(err, models.ErrInvalidCredentials) {
+				form.Add("nonFieldError", "Неккоректные email или пароль")
+				app.Render(w, r, "login.page.tmpl", &TemplateData{
+					Form:            form,
+					Flash:           app.SessionManager.PopString(r.Context(), "flash"),
+					IsAuthenticated: app.IsAuthenticated(r),
+				})
+			} else {
+				app.ServerError(w, err)
+			}
+			return
+		}
+		err = app.SessionManager.RenewToken(r.Context())
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+		app.SessionManager.Put(r.Context(), "authenticatedUserID", id)
+		http.Redirect(w, r, "/universe/create", http.StatusSeeOther)
+	}
+}
+
+func UserLogin(app *Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		app.Render(w, r, "login.page.tmpl", &TemplateData{
+			Form:            validator.NewForm(nil),
+			Flash:           app.SessionManager.PopString(r.Context(), "flash"),
+			IsAuthenticated: app.IsAuthenticated(r),
+		})
 	}
 }
 
 func UserLogoutPost(app *Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Display a HTML form for logging in a user...")
+		err := app.SessionManager.RenewToken(r.Context())
+		if err != nil {
+			return
+		}
+
+		app.SessionManager.Remove(r.Context(), "authenticatedUserID")
+		app.SessionManager.Put(r.Context(), "flash", "Вы успешно вышли!")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }

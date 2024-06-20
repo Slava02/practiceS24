@@ -7,9 +7,7 @@ import (
 )
 
 var (
-	ErrNoRecord           = errors.New("models: подходящей записи не найдено")
-	ErrInvalidCredentials = errors.New("models: invalid credentials")
-	ErrDuplicateEmail     = errors.New("models: duplicate email")
+	ErrNoRecord = errors.New("models: подходящей записи не найдено")
 )
 
 type UniverseModel interface {

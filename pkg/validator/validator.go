@@ -6,7 +6,8 @@ import (
 )
 
 type Validator struct {
-	FieldErrors map[string]string
+	NonFieldErrors []string
+	FieldErrors    map[string]string
 }
 
 func (v *Validator) Valid() bool {
@@ -14,7 +15,6 @@ func (v *Validator) Valid() bool {
 }
 
 func (v *Validator) AddFieldError(key, message string) {
-	// Note: We need to initialize the map first, if it isn't already // initialized.
 	if v.FieldErrors == nil {
 		v.FieldErrors = make(map[string]string)
 	}
@@ -27,6 +27,10 @@ func (v *Validator) CheckField(ok bool, key, message string) {
 	if !ok {
 		v.AddFieldError(key, message)
 	}
+}
+
+func (v *Validator) AddNonFieldError(message string) {
+	v.NonFieldErrors = append(v.NonFieldErrors, message)
 }
 
 func NotBlank(value string) bool {
