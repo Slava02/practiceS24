@@ -10,10 +10,13 @@ func Routes(app *Application) http.Handler {
 
 	r.Use(app.SessionManager.LoadAndSave, app.LogRequest, SecureHeaders)
 
+	loginGroup := r.Group(nil)
+	loginGroup.Use(app.RequireAuthentication)
+	loginGroup.Get("/universe/create", CreateUniverse(app))
+	loginGroup.Post("/universe/create", CreateUniversePost(app))
+
 	r.Get("/", Home(app))
 	r.Get("/universe/view/{id:^[0-9]+}", ShowUniverse(app))
-	r.Get("/universe/create", CreateUniverse(app))
-	r.Post("/universe/create", CreateUniversePost(app))
 
 	r.Get("/user/signup", UserSignup(app))
 	r.Post("/user/signup", UserSignupPost(app))
