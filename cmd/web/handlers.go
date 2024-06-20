@@ -115,6 +115,14 @@ func UserSignupPost(app *Application) http.HandlerFunc {
 		form.MatchesPattern("email", validator.EmailRX)
 		form.MinLength("password", 5)
 
+		if !form.Valid() {
+			app.Render(w, r, "signup.page.tmpl", &TemplateData{
+				Form:            form,
+				IsAuthenticated: app.IsAuthenticated(r),
+			})
+			return
+		}
+
 		err = app.Users.Insert(form.Get("name"), form.Get("email"), form.Get("password"))
 		if err == models.ErrDuplicateEmail {
 			form.Errors.Add("email", "Почта уже используется")
